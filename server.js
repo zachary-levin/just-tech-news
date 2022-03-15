@@ -15,3 +15,5 @@ app.use(routes);
 sequelize.sync({ force: false }).then(() => {
     app.listen(PORT, () => console.log('Now listening'));
 });
+
+// ? GET http://localhost:3001/api/posts/1 doesn't work, doesn't affect anything negatively, but something to note
