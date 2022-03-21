@@ -29,13 +29,13 @@ app.set('view engine', 'handlebars');
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, 'public')));
-const routes = require('./controllers/');
 
+//const routes = require('./controllers/');
+
+app.use(require('./controllers/'));
 
 // turn on routes
-app.use(routes);
-
-
+//app.use(routes);
 
 // turn on connection to db and server
 sequelize.sync({ force: false }).then(() => {
@@ -43,3 +43,5 @@ sequelize.sync({ force: false }).then(() => {
 });
 
 // ? GET http://localhost:3001/api/posts/1 doesn't work, doesn't affect anything negatively, but something to note
+
+// ? Adding comments to posts doesn't work (400 Bad Request error), not sure why that seems to happen (Module 14, Lesson 3)
