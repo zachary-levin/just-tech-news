@@ -1,15 +1,45 @@
+const path = require('path');
 const express = require('express');
-const routes = require('./routes');
-const sequelize = require('./config/connection');
+const exphbs = require('express-handlebars');
+const session = require('express-session');
 
 const app = express();
 const PORT = process.env.PORT || 3001;
 
+const sequelize = require('./config/connection');
+const SequelizeStore = require('connect-session-sequelize')(session.Store);
+
+const sess = {
+    secret: 'Super secret secret',
+    cookie: {},
+    resave: false,
+    saveUninitialized: true,
+    store: new SequelizeStore({
+        db: sequelize
+    })
+};
+
+app.use(session(sess));
+
+const helpers = require('./utils/helpers');
+const hbs = exphbs.create({ helpers });
+
+app.engine('handlebars', hbs.engine);
+app.set('view engine', 'handlebars');
+
+
+
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(express.static(path.join(__dirname, 'public')));
+
+//const routes = require('./controllers/');
+
+app.use(require('./controllers/'));
 
 // turn on routes
-app.use(routes);
+//app.use(routes);
 
 // turn on connection to db and server
 sequelize.sync({ force: false }).then(() => {
@@ -17,3 +47,5 @@ sequelize.sync({ force: false }).then(() => {
 });
 
 // ? GET http://localhost:3001/api/posts/1 doesn't work, doesn't affect anything negatively, but something to note
+
+// ? Adding comments to posts doesn't work (400 Bad Request error), not sure why that seems to happen (Module 14, Lesson 3)
